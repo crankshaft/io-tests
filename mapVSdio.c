@@ -9,7 +9,7 @@
 #include <sys/mman.h>
 #include <string.h>
 
-#define TEST_BLKSZ 40960
+#define TEST_BLKSZ 4096
 
 union test_handle {
 	int fd;
@@ -21,7 +21,7 @@ int init_map(union test_handle *thd, char *filename, size_t size)
 	int fd;
 	char *map;
 
-	fd = open(filename, O_RDONLY);
+	fd = open(filename, O_RDWR);
 	if (fd == -1) return -1;
 
 	map = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
@@ -37,7 +37,7 @@ int init_dio(union test_handle *thd, char *filename, size_t size)
 {
 	int fd;
 
-	fd = open(filename, O_RDONLY|O_DIRECT);
+	fd = open(filename, O_RDWR|O_DIRECT);
 	if (fd == -1) return -1;
 	thd->fd = fd;
 	return 0;
@@ -113,7 +113,7 @@ int simple_test_seq(struct test_case *cs)
 	off_t offset = 0;
 	union test_handle hd;
 
-	ret = cs->init(&hd, "/dev/sdc", ((size_t)1024)*1024*1024*900);
+	ret = cs->init(&hd, "/dev/sdb", ((size_t)1024)*1024*1024*900);
 	assert(ret == 0);
 
 	do {
